@@ -1,30 +1,41 @@
 from subprocess import Popen, PIPE, STDOUT
 from datetime import datetime 
 
-games = []
+index_path = "/YOUR-PATH/index.html"
+csv_path = "/YOUR-PATH/steamPlayLog.csv"
+open_games = []
 
-def launch_op(nuline):
-    nuline = nuline.split("/common/")[-1]
-    nuline = nuline.split("/")[0]
+def resolve_name(appid):
+    index = open(index_path, "r")
+    games_list = index.read()
 
-    nu_game = [nuline, datetime.now()]
-    games.append(nu_juego)
+    start = games_list.find(appid)
+    end = games_list.find("\"}", start)
+
+    return games_list[start:end].split("name\":\"")[-1]
+
+def launch_op(line):
+    appid = line.split(" ")[5] #Game process added : AppID <appid> ...
+
+    new_launch = [appid, datetime.now()]
+    open_games.append(new_launch)
 
 
-def finish_op(nuline):
-    nuline = nuline.split("/common/")[-1]
-    nuline = nuline.split("/")[0]
+def finish_op(line):
+    appid = line.split(" ")[4] #Game process removed: AppID <appid> ...
 
-    for i in games:
-        if i[0] == nuline:
-            games.remove(i)
+    for i in open_games:
+        if i[0] == appid:
+            open_games.remove(i)
 
             now = datetime.now()
             diff = now - i[1]
             format_code = '%Y-%m-%d,%H:%M:%S'
 
-            f = open("/YOUR-PATH/steamPlayLog.csv", "a")
-            entry = nuline + "," + i[1].strftime(format_code) + "," + \
+            game_name = resolve_name(i[0])
+
+            f = open(csv_path, "a")
+            entry = game_name + "," + i[1].strftime(format_code) + "," + \
                 now.strftime(format_code) + "," + \
                 str(int(diff.seconds/60 +1)) + "\n"
 
@@ -32,18 +43,20 @@ def finish_op(nuline):
             f.close()
 
 def main():
-    p = Popen(['/usr/bin/steam-runtime', '%U'], stdin=PIPE, stdout=PIPE, stderr=STDOUT, bufsize=10000)
+    p = Popen(['/usr/bin/steam-runtime', '%U'], 
+        stdin=PIPE, stdout=PIPE, stderr=STDOUT, bufsize=10000)
+
     for line in p.stdout:
         exitcode = p.poll
         if (exitcode == 0) or (exitcode == 1): 
             exit()
         
-        nuline = str(line)
+        line = str(line)
 
-        if ("Game process added" in nuline):
-            launch_op(nuline)  
-        if ("Game process removed" in nuline):
-            finish_op(nuline)  
+        if ("Game process added" in line):
+            launch_op(line)  
+        if ("Game process removed" in line):
+            finish_op(line)  
 
 
 if __name__ == '__main__':

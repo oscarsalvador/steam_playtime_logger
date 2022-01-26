@@ -4,8 +4,10 @@ This is a small Python script to track every time a Steam game is played. It doe
 
 ## Usage and configuration
 1. Download the source code.
-2. Edit line 26 with whichever path you'll use for the CSV file. Either copy the one on this repo or use another, but if you do the latter, know that the script does not add headers, only the entries.
-3. Edit line 36 with however you launch Steam in your system. For example, if you use an icon, copy it's command into the string Popen launches.
-4. Change the way you launch steam so that you launch this script instead. Following the previous example, change the icon's command to "python /wherever_you_place_the_script/steamlogger.py"
+2. Head to https://partner.steam-api.com/ISteamApps/GetAppDepotVersions/v2/ and download the index as a json, or use wget to download it as an html file.
+3. Edit the global variable "index_path" with the path, and name you've given the index, as well as whatever extension it has.
+4. Edit the global variable "csv_path" with wherever you've dropped the included CSV. If you use a different one, know that the script does not add column headers.
+5. Edit line 46 with however you launch Steam in your system. For example, if you use an icon, copy it's command into the process and arguments Popen launches.
+6. Change the way you launch steam so that you launch this script instead. Following the previous example, change the icon's command to "python /wherever_you_place_the_script/steamlogger.py"
 
 
