@@ -30,7 +30,6 @@ def finish_op(nuline):
 
             f.write(entry)
             f.close()
-            # print(nuline, i[1], now, int(diff.seconds/60 +1))
 
 def main():
     p = Popen(['/usr/bin/steam-runtime', '%U'], stdin=PIPE, stdout=PIPE, stderr=STDOUT, bufsize=10000)
