@@ -1,23 +1,23 @@
 from subprocess import Popen, PIPE, STDOUT
 from datetime import datetime 
 
-juegos = []
+games = []
 
 def launch_op(nuline):
     nuline = nuline.split("/common/")[-1]
     nuline = nuline.split("/")[0]
 
-    nu_juego = [nuline, datetime.now()]
-    juegos.append(nu_juego)
+    nu_game = [nuline, datetime.now()]
+    games.append(nu_juego)
 
 
 def finish_op(nuline):
     nuline = nuline.split("/common/")[-1]
     nuline = nuline.split("/")[0]
 
-    for i in juegos:
+    for i in games:
         if i[0] == nuline:
-            juegos.remove(i)
+            games.remove(i)
 
             now = datetime.now()
             diff = now - i[1]
