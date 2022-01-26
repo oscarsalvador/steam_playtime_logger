@@ -1,5 +1,5 @@
 # Steam Playtime Logger
-This is a small Python script to track every time a Steam game is played. It does so by tracking the title of the game and the times of launch and close. These are saved on a .csv, which can be visualized as a stacked bar chart with the R script added. 
+This is a small Python script to track every time a Steam game is played. It does so by tracking the title of the game and the timestamps at which it's launched and closed. These are saved on a .csv, which can be visualized as a stacked bar chart with the R script included. 
 ![bar_chart](exit.png)
 
 ## Usage and configuration
