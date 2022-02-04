@@ -1,23 +1,34 @@
 from subprocess import Popen, PIPE, STDOUT
 from datetime import datetime 
 
-index_path = "/YOUR-PATH/index.html"
+index_path = "/YOUR-PATH/v2.json"  #or /YOUR-PATH/index.html
 csv_path = "/YOUR-PATH/steamPlayLog.csv"
+minimum_minutes = 0
 open_games = []
 
-def resolve_name(appid):
+def resolve_name(appid, line):
     index = open(index_path, "r")
     games_list = index.read()
 
-    start = games_list.find(appid)
-    end = games_list.find("\"}", start)
+    start = games_list.find(":" + str(appid) + ",")
+    #if the exact appid was found => the game currently available in the store
+    if start != -1:
+        end = games_list.find("\"}", start)
+        return games_list[start:end].split("name\":\"")[-1]
+    # not found => either non-steam game or a removed title
+    # if path contains common & steam, it's a removed game; get the name from its folder
+    if line.__contains__("/Steam/steamapps/common/"):
+        name = line.split("/common/")[-1]
+        name = name.split("/")[0]
+        return name
+    # last scenario, non-steam game; launch method varies, i just save the whole line
+    return line.split("Game process removed: ")[-1]
 
-    return games_list[start:end].split("name\":\"")[-1]
 
 def launch_op(line):
     appid = line.split(" ")[5] #Game process added : AppID <appid> ...
 
-    new_launch = [appid, datetime.now()]
+    new_launch = [appid, datetime.now(), line]
     open_games.append(new_launch)
 
 
@@ -30,14 +41,18 @@ def finish_op(line):
 
             now = datetime.now()
             diff = now - i[1]
-            format_code = '%Y-%m-%d,%H:%M:%S'
+            if int(diff.seconds/60) < minimum_minutes: #don't log if under minimum
+                return
 
-            game_name = resolve_name(i[0])
+            format_code = '%Y/%m/%d,%H:%M:%S'
+
+            game_name = resolve_name(i[0], line)
+            print(game_name)
 
             f = open(csv_path, "a")
             entry = game_name + "," + i[1].strftime(format_code) + "," + \
                 now.strftime(format_code) + "," + \
-                str(int(diff.seconds/60 +1)) + "\n"
+                str(int(diff.seconds/60)) + "\n"
 
             f.write(entry)
             f.close()
@@ -53,9 +68,9 @@ def main():
         
         line = str(line)
 
-        if ("Game process added" in line):
+        if "Game process added" in line:
             launch_op(line)  
-        if ("Game process removed" in line):
+        if "Game process removed" in line:
             finish_op(line)  
 
 
