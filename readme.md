@@ -12,4 +12,4 @@ This is a small Python script to track every time a Steam game is played. It doe
 7. Change the way you launch steam so this script is launched instead. Following the previous example, change the icon's command to "python /wherever_you_place_the_script/steamlogger.py"
 
 ## Non-Steam Games
-Games without an AppID or path in /Steam/steamapps/common/ can have very different launch methods. I just save the whole line, it's up to you to find and replace it with the actual name, before applying the R script to the CSV file.
+Games without an AppID or path in /Steam/steamapps/common/ can have very different launch methods. This script just saves the whole line, it's up to you to find and replace it in the CSV file with the game's actual name, before applying the R script to it.
